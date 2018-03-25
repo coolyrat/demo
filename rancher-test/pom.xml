@@ -5,11 +5,11 @@
 
 	<groupId>com.example</groupId>
 	<artifactId>rancher-test</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>rancher-test</name>
-	<description>docker镜像，不同实例id</description>
+	<description>根据环境变量链接数据库</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -34,6 +34,32 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jooq</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.tomcat</groupId>
+					<artifactId>tomcat-jdbc</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -99,6 +125,61 @@
 					<tag>${project.version}</tag>
 					<contextDirectory>${project.build.directory}</contextDirectory>
 					<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen-maven</artifactId>
+
+				<!-- The plugin should hook into the generate goal -->
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<!-- Manage the plugin's dependency. -->
+				<dependencies>
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>${mysql.version}</version>
+					</dependency>
+				</dependencies>
+
+				<!-- Specify the plugin configuration.
+       The configuration format is the same as for the standalone code generator -->
+				<configuration>
+
+					<!-- JDBC connection parameters -->
+					<jdbc>
+						<url>${env.JDBC_URL}</url>
+						<user>${env.JDBC_USER}</user>
+						<password>${env.JDBC_PASSWORD}</password>
+					</jdbc>
+
+					<!-- Generator parameters -->
+					<generator>
+						<database>
+							<name>org.jooq.util.mysql.MySQLDatabase</name>
+							<includes>.*</includes>
+							<excludes>schema_version</excludes>
+							<!-- In case your database supports catalogs, e.g. SQL Server:
+                            <inputCatalog>public</inputCatalog>
+                              -->
+							<inputSchema>rancher-test</inputSchema>
+
+						</database>
+						<target>
+							<packageName>com.example.docker.helloworld.domain</packageName>
+							<directory>target/generated-sources/jooq</directory>
+						</target>
+					</generator>
 				</configuration>
 			</plugin>
 
