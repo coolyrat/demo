@@ -10,11 +10,9 @@ node {
     stage('Build artifact') {
         dir('rancher-test') {
             sh 'pwd'
-            sh 'echo $PWD'
 
-            docker.image("registry.cn-hangzhou.aliyuncs.com/acs/maven:3-jdk-8").inside('-v maven-repo:/root/.m2 -v maven-repo/repository:/usr/share/maven/ref/repository -v "$PWD/rancher-test":/usr/src/mymaven -w /usr/src/mymaven') {
-                sh 'mvn clean package'
-            }
+            sh 'docker run -it --rm -v maven-repo:/root/.m2 -v maven-repo:/usr/share/maven/ref/repository -v "$PWD":/usr/src/mymaven -w /usr/src/mymaven registry.cn-hangzhou.aliyuncs.com/acs/maven:3-jdk-8 mvn clean package'
+
         }
         /* This builds the actual image; synonymous to
          * docker build on the command line
