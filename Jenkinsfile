@@ -11,7 +11,9 @@ node {
         dir('rancher-test') {
             sh 'pwd'
 
-            docker.build("demo/builder-img:${env.BUILD_ID}", "-f Dockerfile.build .").inside('-v $HOME/.m2:/root/.m2')
+            docker.image("registry.cn-hangzhou.aliyuncs.com/acs/maven:3-jdk-8").inside('-v maven-repo:/root/.m2 -v "$PWD":/usr/src/mymaven') {
+                sh 'mvn clean package'
+            }
         }
         /* This builds the actual image; synonymous to
          * docker build on the command line
@@ -22,8 +24,7 @@ node {
     stage('Build image') {
             dir('rancher-test') {
                 sh 'pwd'
-                sh 'docker create --name builder-${env.BUILD_ID} builder-img:${env.BUILD_ID}'
-                sh 'docker cp builde-${env.BUILD_ID}r:/usr/src/app/target ./target'
+                sh 'ls ./target'
                 app = docker.build("demo/rancher-test")
             }
             /* This builds the actual image; synonymous to
