@@ -11,7 +11,7 @@ node {
         dir('rancher-test') {
             sh 'pwd'
 
-            app = docker.build("registry.cn-hangzhou.aliyuncs.com/acs/maven:3-jdk-8").inside('-v $HOME/.m2:/root/.m2')
+            app = docker.build("demo/rancher-test").inside('-v $HOME/.m2:/root/.m2')
         }
         /* This builds the actual image; synonymous to
          * docker build on the command line
