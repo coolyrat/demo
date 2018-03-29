@@ -11,7 +11,7 @@ node {
         dir('rancher-test') {
             sh 'pwd'
 
-            docker.image("registry.cn-hangzhou.aliyuncs.com/acs/maven:3-jdk-8").inside('-v maven-repo:/root/.m2 -v "$PWD":/usr/src/mymaven') {
+            docker.image("registry.cn-hangzhou.aliyuncs.com/acs/maven:3-jdk-8").inside('-v maven-repo:/root/.m2 -v "$PWD":/usr/src/mymaven -w /usr/src/mymaven') {
                 sh 'mvn clean package'
             }
         }
