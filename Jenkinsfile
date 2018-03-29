@@ -11,7 +11,7 @@ node {
         dir('rancher-test') {
             sh 'pwd'
 
-            docker.build("demo/builder-img:${env.BUILD_ID}", "Dockerfile.build").inside('-v $HOME/.m2:/root/.m2')
+            docker.build("demo/builder-img:${env.BUILD_ID}", "-f Dockerfile.build .").inside('-v $HOME/.m2:/root/.m2')
         }
         /* This builds the actual image; synonymous to
          * docker build on the command line
