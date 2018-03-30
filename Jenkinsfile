@@ -11,7 +11,7 @@ node {
         dir('rancher-test') {
             sh 'pwd'
 
-            sh 'docker run --rm -v jenkins_home:/root/.m2 -w $(pwd) registry.cn-hangzhou.aliyuncs.com/acs/maven:3-jdk-8 mvn clean install -Dmaven.test.skip=true'
+            sh 'docker run --rm -u root -v jenkins_home:/root/.m2 -w $(pwd) registry.cn-hangzhou.aliyuncs.com/acs/maven:3-jdk-8 mvn clean install -Dmaven.test.skip=true'
 
         }
         /* This builds the actual image; synonymous to
